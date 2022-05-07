@@ -1,5 +1,5 @@
 #sle712 at3: draft script
-#2022-07-06
+#2022-05-07
 
 #file “gene_expression.tsv”
 #1. read in the file, make the gene identifiers the row names. Show a table of values for the first six genes.
@@ -101,9 +101,17 @@ GE.Means
 hist(GE.Means,main="Part-1 Q-5: Mean Gene Expression Values")
 hist(GE.Means)
 #getting a hist but it only has one bin. 
-#try changing number of sig figures in data?
-GE.Means <- signif(gene.expression.tsv$GE.Means, 3)
-GE.Means
-hist(GE.Means)
 #leave for the mo
-#stopped here 2022-07-05, commit to github.
+#stopped here 2022-05-07, commit to github.
+
+
+
+#2022-05-07
+#looking again at hist. Is it only giving 1  bin because there are so many zero values? 
+#code from stackoverflow
+#https://stackoverflow.com/questions/9977686/how-to-remove-rows-with-any-zero-value
+GE.Means.nozeros <- GE.Means[GE.Means==0.00]
+GE.Means.nozeros
+hist(GE.Means.nozeros)
+rm(GE.Means.nozeros)
+##nope. this doesn't work. How can I remove 0 values?
