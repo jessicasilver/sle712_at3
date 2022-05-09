@@ -138,4 +138,61 @@ gene.expression.tsv
 #"No the question is definitely about columns.
 #In transcriptome analysis, sometimes we calculate the column means for control and case groups separately
 #so that we can calculate a fold change or effect size for individual genes."
+#yep. Just overthinking this. Keep as is with rowMeans
 
+
+max(GE.Means)
+
+
+#2022-05-10
+#part 2
+#1. import this file into an R object.
+growth.data.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/growth_data.csv"
+growth.data.csv <- read.table(growth.data.URL,sep = ",",  header=TRUE)
+growth.data.csv
+#row names have been given numbers, column names have been identified as V1 V2 etc
+str(growth.data.csv)
+#this is better but it still have row name as integers. 
+
+#looking at notes, i should just be able to use the read.csv function instead of read.table? try...
+growth.data.csv <- read.csv(growth.data.URL)
+growth.data.csv
+?read.csv
+#this is fine. 
+
+#1. what are the column names? 
+colnames(growth.data.csv)
+#"Site"            "TreeID"          "Circumf_2005_cm" "Circumf_2010_cm" "Circumf_2015_cm" "Circumf_2020_cm"
+
+#2. Calculate the mean and SD of tree circumference at th start and end of the study at both sites. 
+#okay so we have two sites "northeast" and "southwest" 
+#start of study is col3: circumf_2005_cm
+#end of study is col6: circum_2020_cm
+head(growth.data.csv)
+?head
+northeast.site <- subset(growth.data.csv,Site == "northeast")
+head(northeast.site)
+#i have now subsetted growth.data.csv for northeast site: df=northeast.site
+mean(northeast.site$Circumf_2005_cm)
+sd(northeast.site$Circumf_2005_cm)
+#start of study: mean=5.292 sd=0.914
+#change sig figs? 
+mean(northeast.site$Circumf_2020_cm)
+sd(northeast.site$Circumf_2020_cm)
+#end of study: mean=54.228 sd=25.22795
+#change sig figures?
+
+#now subset for southwest site, and calc mean and sd at start and end of study
+southwest.site <- subset(growth.data.csv,Site == "southwest")
+head(southwest.site)
+mean(southwest.site$Circumf_2005_cm)
+sd(southwest.site$Circumf_2005_cm)
+#start of study: mean=4.862 sd=1.147471
+mean(southwest.site$Circumf_2020_cm)
+sd(southwest.site$Circumf_2020_cm)
+#end of study: mean=45.596 sd=17.87345
+
+#3. Make a box plot of tree circumference at the start and end of the study at both sites.
+?boxplot
+boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm)
+#this base function works: can I also 
