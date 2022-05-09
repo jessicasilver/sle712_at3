@@ -10,9 +10,9 @@ gene.expression.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_fil
 gene.expression.tsv <- read.table(gene.expression.URL)
 gene.expression.tsv
 #looking at this, rows have been given new identifiers and columns have been named V1 and V2. Need to make gene identifiers the row names. 
-gene.expression.tsv <- read.table(gene.expression.URL, header=TRUE, row.names = 1)
+gene.expression.tsv <- read.table(gene.expression.URL,stringsAsFactors = FALSE, header=TRUE, row.names = 1)
 gene.expression.tsv
-
+str(gene.expression.tsv)
 
 #1. Show a table of values for the first six genes.
 #this will be in the [r,c] format
@@ -34,6 +34,13 @@ rowMeans(gene.expression.tsv)
 gene.expression.tsv$GE.Means <- rowMeans(gene.expression.tsv)
 gene.expression.tsv
 #good, have the new column. yay. it's got a lot of sig figures though - perhaps something to modify later? 
+#You can turn it off with options(scipen = 999) and back on again with options(scipen = 0)
+#https://stackoverflow.com/questions/25946047/how-to-prevent-scientific-notation-in-r
+options(scipen = 999)
+gene.expression.tsv
+#this removed e notation (scientific)
+#still have lots of decimals. 
+
 #Show a table of values for the first six genes.
 gene.expression.tsv[1:6,]
 #done. this will need to be embedded into .rmd later
@@ -103,7 +110,12 @@ hist(GE.Means)
 #getting a hist but it only has one bin. 
 #leave for the mo
 #stopped here 2022-05-07, commit to github.
-
+#trying on 2022-05-09
+hist(gene.expression.tsv$GE.Means,main="Part-1 Q-5: Mean Gene Expression Values")
+#still one bin. Okay.
+hist(gene.expression.tsv$GE.Means,main="Part-1 Q-5: Mean Gene Expression Values", xlab="Mean Gene Expression",breaks="scott",xlim=c(0,10000),ylim = c(0,50000))
+#function above. breaks = change bin number and size
+#must be one of “sturges”, “fd”, “freedman-diaconis”, “scott”
 
 
 #2022-05-07
@@ -115,3 +127,15 @@ GE.Means.nozeros
 hist(GE.Means.nozeros)
 rm(GE.Means.nozeros)
 ##nope. this doesn't work. How can I remove 0 values?
+
+
+#2022-05-09
+#reply from MZ: q2 is definitely about columns. 
+#2. Make a new column which is the mean of the other columns. Show a table of values for the first six genes.
+colMeans(gene.expression.tsv)
+gene.expression.tsv
+# Am i overthinking this? MZ reply: 
+#"No the question is definitely about columns.
+#In transcriptome analysis, sometimes we calculate the column means for control and case groups separately
+#so that we can calculate a fold change or effect size for individual genes."
+
