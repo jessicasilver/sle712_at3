@@ -195,4 +195,13 @@ sd(southwest.site$Circumf_2020_cm)
 #3. Make a box plot of tree circumference at the start and end of the study at both sites.
 ?boxplot
 boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm)
-#this base function works: can I also 
+#this base function works: can I also add southwest site to the same boxplot? 
+boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwest.site$Circumf_2005_cm, southwest.site$Circumf_2020_cm)
+#yep.
+#need y lab
+boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwest.site$Circumf_2005_cm, southwest.site$Circumf_2020_cm,ylab="Tree Circumference (cm)")
+#need x lab
+boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwest.site$Circumf_2005_cm, southwest.site$Circumf_2020_cm,names=c("Northeast 2005", "Northeast 2020", "Southwest 2005", "Southwest 2020"),ylab="Tree Circumference (cm)")
+#zoom in to see labels on all plots
+#let's change order of data. 
+boxplot(northeast.site$Circumf_2005_cm,  southwest.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwest.site$Circumf_2020_cm,names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),ylab="Tree Circumference (cm)")
