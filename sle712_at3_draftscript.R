@@ -205,3 +205,30 @@ boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwes
 #zoom in to see labels on all plots
 #let's change order of data. 
 boxplot(northeast.site$Circumf_2005_cm,  southwest.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwest.site$Circumf_2020_cm,names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),ylab="Tree Circumference (cm)")
+
+
+#2022-05-11
+#Calculate the mean growth over the last 10 years at each site.
+#mean $Circum_2015_cm and $Circumf_2020_cm for both northeast.site and southwest.site
+mean(northeast.site$Circumf_2015_cm,northeast.site$Circumf_2020_cm)
+#doesn't work. Do I need to subset this data further? 
+northeast.site[,c("Circumf_2015_cm","Circumf_2020_cm")]
+northeast.last10 <- northeast.site[,c("Circumf_2015_cm","Circumf_2020_cm")]
+head(northeast.last10)
+southwest.site[,c("Circumf_2015_cm","Circumf_2020_cm")]
+southwest.last10 <- southwest.site[,c("Circumf_2015_cm","Circumf_2020_cm")]
+head(southwest.last10)
+#so I have further subsetted the northeast and southwest sites into the last 10 years
+#now I want to get the mean 
+#can I add a new col which is the mean of the last 10 years? 
+northeast.last10$Tenyear.Mean <- rowMeans(northeast.last10)
+head(northeast.last10)
+#that works. So now do the same for southwest?
+southwest.last10$Tenyear.Mean <- rowMeans(southwest.last10)
+head(southwest.last10)
+#but q wants mean OVERALL growth i.e. of all trees? 
+colMeans(northeast.last10)
+colMeans(southwest.last10)
+#ten year mean NE=39.372
+#ten year mean SW=33.456
+#this is a messy and long way of doing it. Is there a more succinct way? 
