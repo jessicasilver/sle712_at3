@@ -207,7 +207,7 @@ boxplot(northeast.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwes
 boxplot(northeast.site$Circumf_2005_cm,  southwest.site$Circumf_2005_cm, northeast.site$Circumf_2020_cm, southwest.site$Circumf_2020_cm,names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),ylab="Tree Circumference (cm)")
 
 
-#2022-05-11
+#2022-05-13
 #Calculate the mean growth over the last 10 years at each site.
 #mean $Circum_2015_cm and $Circumf_2020_cm for both northeast.site and southwest.site
 mean(northeast.site$Circumf_2015_cm,northeast.site$Circumf_2020_cm)
@@ -232,3 +232,6 @@ colMeans(southwest.last10)
 #ten year mean NE=39.372
 #ten year mean SW=33.456
 #this is a messy and long way of doing it. Is there a more succinct way? 
+
+#q5. Use the t.test and wilcox.test functions to estimate the p-value that the 10 year 
+#growth is different at the two sites.
