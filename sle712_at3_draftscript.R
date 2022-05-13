@@ -235,3 +235,31 @@ colMeans(southwest.last10)
 
 #q5. Use the t.test and wilcox.test functions to estimate the p-value that the 10 year 
 #growth is different at the two sites.
+#2022-05-14
+northeast10 <- northeast.last10$Tenyear.Mean
+northeast10
+southwest10 <- southwest.last10$Tenyear.Mean
+southwest10
+
+ttest10year <- t.test(northeast10,southwest10)
+ttest10year$p.value
+signif(ttest10year$p.value,3)
+ttest.result <- signif(ttest10year$p.value,3)
+ttest.result
+#p=0.0465, p<0.05 and growth is sig different. 
+if (ttest.result < 0.05) {
+  message("Mean growth is significantly different between the NE and SW sites over the last 10 years. p = ", ttest.result)
+} else {
+  message("Mean growth is NOT significantly different between the NE and SW sites over the last 10 years. p = ")
+}
+
+?wilcox.test
+
+
+#Some suggestions from Greg: 
+#use grep function for subsetting NE and SW data. 
+#head(growth.data.csv)
+#col n=3 etc = NULL
+#does last 10 years of data mean 2010-2020, or 2015-2020?
+#https://www.r-bloggers.com/2013/06/box-plot-with-r-tutorial/ 
+#for later. 
