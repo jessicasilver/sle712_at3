@@ -55,7 +55,7 @@ sortedGE.Means <- gene.expression.tsv[order(gene.expression.tsv$GE.Means,)]
 #this keeps coming up with error code.
 #try again... 
 order(gene.expression.tsv$GE.Means)
-#line 47 works and order GE.Means from lowest to highest. presents as vector not matrix. 
+#works and order GE.Means from lowest to highest. presents as vector not matrix. 
 #remove sortedGE.Means
 rm(sortedGE.Means)
 
@@ -248,9 +248,9 @@ ttest.result <- signif(ttest10year$p.value,3)
 ttest.result
 #p=0.0465, p<0.05 and growth is sig different. 
 if (ttest.result < 0.05) {
-  message("Mean growth is significantly different between the NE and SW sites over the last 10 years. p = ", ttest.result)
+  message("Mean growth is significantly different (p=", ttest.result, ") between the NE and SW sites over the last 10 years.")
 } else {
-  message("Mean growth is NOT significantly different between the NE and SW sites over the last 10 years. p = ")
+  message("Mean growth is NOT significantly different (p=", ttest.result, ")between the NE and SW sites over the last 10 years.")
 }
 
 ?wilcox.test
@@ -263,3 +263,45 @@ if (ttest.result < 0.05) {
 #does last 10 years of data mean 2010-2020, or 2015-2020?
 #https://www.r-bloggers.com/2013/06/box-plot-with-r-tutorial/ 
 #for later. 
+
+#2022-05-14
+#redo growthdata with `grep` and `function`
+#subset growth data using grep function
+growth.data.csv
+
+growth.data.csv[grep("northeast", growth.data.csv$Site), ]
+NEsite <- growth.data.csv[grep("northeast", growth.data.csv$Site), ]
+NEsite
+
+SWsite <- growth.data.csv[grep("southwest", growth.data.csv$Site), ]
+SWsite
+
+nrow(SWsite)
+nrow(NEsite)
+
+
+mean(NEsite$Circumf_2005_cm)
+sd(NEsite$Circumf_2005_cm)
+mean(NEsite$Circumf_2020_cm)
+sd(NEsite$Circumf_2020_cm)
+
+mean(SWsite$Circumf_2005_cm)
+sd(SWsite$Circumf_2005_cm)
+mean(SWsite$Circumf_2020_cm)
+sd(SWsite$Circumf_2020_cm)
+
+GDmeansd <- function (x) {
+  GDmean <- signif(mean(x),3)
+  GDsd <- signif(sd(x),3)
+  message("Mean = ", GDmean , " SD = ", GDsd)
+}
+
+GDmeansd(NEsite$Circumf_2005_cm)
+GDmeansd(NEsite$Circumf_2020_cm)
+GDmeansd(SWsite$Circumf_2005_cm)
+GDmeansd(SWsite$Circumf_2020_cm)
+
+boxplot(NEsite$Circumf_2005_cm,  SWsite$Circumf_2005_cm, 
+        NEsite$Circumf_2020_cm, SWsite$Circumf_2020_cm,
+        names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),
+        ylab="Tree Circumference (cm)")
