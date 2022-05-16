@@ -305,3 +305,13 @@ boxplot(NEsite$Circumf_2005_cm,  SWsite$Circumf_2005_cm,
         NEsite$Circumf_2020_cm, SWsite$Circumf_2020_cm,
         names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),
         ylab="Tree Circumference (cm)")
+
+#2022-05-16
+#try using `lapply` or `sapply` fpr GDmeans 
+#put each of the subsets in a list
+sitelist <- list(NEsite_2005 = NEsite$Circumf_2005_cm, NEsite_2020 = NEsite$Circumf_2020_cm, 
+                 SWsite_2005 = SWsite$Circumf_2005_cm, SWsite_2020 = SWsite$Circumf_2020_cm)
+sitelist
+
+sapply(X = sitelist, FUN = GDmeansd)
+#this is working and returning mean and SD values but also some NULL lines. 
