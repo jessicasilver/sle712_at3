@@ -28,3 +28,45 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+### Part 1
+#### Question 1. Read in the file, making the gene identifiers the row names. Show a table of values for the first six genes. 
+
+The link to the file (URL) was first defined as "gene.expression.URL". The table was then read in to Rstudio using the `read.table` command. 
+
+The structure of the file was first viewed using the `str()` command. As integers were given (as a default) as row names, `header=TRUE` and `row.names = 1` were included in the `read.table` command to make the gene identifiers the row names. 
+
+The data table was named "gene.expression.tsv".
+
+
+
+A table for values for the first six genes was generated using the `df[row,columns]` command structure. As all columns for the first 6 genes (rows) were requested, the command reads `gene.expression.tsv[1:6,]`
+
+
+``` {r gene.expression.tsv-codechunk1}
+gene.expression.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/gene_expression.tsv"
+gene.expression.tsv <- read.table(gene.expression.URL,stringsAsFactors = FALSE, header=TRUE, row.names = 1)
+
+gene.expression.tsv[1:6,]
+```
+**Table 1.** Part 1 Question 1. Table of values for the first six genes.
+
+
+
+#### Question 2. Make a new column which is the mean of the other columns. Show a table of values for the first six genes.
+The question asks for a new column which is the mean gene expression across the three samples of interest. `rowmeans(df)` was used to calculate average gene expression for all genes. A new column containing the average gene expression was added to the "gene.expression.tsv" dataframe using `df$newcolumn` notation. A table for values for the first six genes was generated using the `df[row,columns]` command structure as described above. 
+
+``` {r gene.expression.tsv-codechunk2}
+gene.expression.tsv$GE.Means <- rowMeans(gene.expression.tsv)
+gene.expression.tsv[1:6,]
+```
+**Table 2.** Part 1 Question 2. Table of values for the first six genes, including new "Mean Gene Expression" Column. 
+
+
+
+#### Question 3. List the 10 genes with the highest mean expression
+``` {r gene.expression.tsv-codechunk3}
+reverse_sortedGEMeans <- gene.expression.tsv[order(-gene.expression.tsv$GE.Means),]
+reverse_sortedGEMeans[1:10,4,drop=FALSE]
+```
+
