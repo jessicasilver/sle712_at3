@@ -26,6 +26,16 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 Include some details here about packages that must be installed prior to running these codes. This information may also be included in the readme 
 
 
+
+```{r setupinstructions}
+suppressPackageStartupMessages({
+  library("seqinr")
+library("kableExtra")
+library("R.utils")
+})
+
+```
+
 ### Part 1
 #### Question 1. Read in the file, making the gene identifiers the row names. Show a table of values for the first six genes. 
 

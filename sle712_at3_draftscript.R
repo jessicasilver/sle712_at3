@@ -99,7 +99,7 @@ subset(gene.expression.tsv,GE.Means <10)
 #okay so this is fine, but I just re-read the question. it wants the NUMBER of genes with GE.Means<10
 nrow(gene.expression.tsv[gene.expression.tsv$GE.Means <10,])
 #it works!! n=35988
-
+print(nrow(gene.expression.tsv[gene.expression.tsv$GE.Means <10,]))
 
 #5. Make a histogram plot of the mean values and include it into your report.
 #first should define GE.Means as data
@@ -301,10 +301,7 @@ GDmeansd(NEsite$Circumf_2020_cm)
 GDmeansd(SWsite$Circumf_2005_cm)
 GDmeansd(SWsite$Circumf_2020_cm)
 
-boxplot(NEsite$Circumf_2005_cm,  SWsite$Circumf_2005_cm, 
-        NEsite$Circumf_2020_cm, SWsite$Circumf_2020_cm,
-        names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),
-        ylab="Tree Circumference (cm)")
+
 
 #2022-05-16
 #try using `lapply` or `sapply` fpr GDmeans 
@@ -315,3 +312,128 @@ sitelist
 
 sapply(X = sitelist, FUN = GDmeansd)
 #this is working and returning mean and SD values but also some NULL lines. 
+
+
+
+
+
+#PART 2
+library("seqinr")
+library("kableExtra")
+library("R.utils")
+
+#q1 Download the whole set of coding DNA sequences for E. coli and your organism of interest. Helicobacter anseris (GCA_003364335)
+
+ecoliK12URL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655_gca_000005845/cds/Escherichia_coli_str_k_12_substr_mg1655_gca_000005845.ASM584v2.cds.all.fa.gz"
+hanserisURL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_51_collection/helicobacter_anseris_gca_003364335/cds/Helicobacter_anseris_gca_003364335.ASM336433v1.cds.all.fa.gz"
+
+#download.file` must specify object URL is saved as  "," then destination file name ""
+download.file(ecoliK12URL,destfile = "ecoli_cds.fa.gz")
+download.file(hanserisURL,destfile = "hanseris_cds.fa.gz")
+
+#files saved as .gz (compressed) so need to unzip
+gunzip("ecoli_cds.fa.gz")
+gunzip("hanseris_cds.fa.gz")
+list.files()
+
+#q1 How many coding sequences are present in these organisms?
+
+#use `seqinr` package. 
+
+ecoli_cds <- seqinr::read.fasta("ecoli_cds.fa")
+hanseris_cds <- seqinr::read.fasta("hanseris_cds.fa")
+
+str(head(ecoli_cds))
+str(head(hanseris_cds))
+
+length(ecoli_cds)    
+length(hanseris_cds)
+#ANS: ECOLI=4239 coding sequences, HANSERIS=1578 coding sequences.
+#ecoli approx 2.7x as many cds than hanseris
+
+
+#q1 How much coding DNA is there in total for these two organisms?
+#UNSURE
+
+#q2 Calculate the length of all coding sequences in these two organisms. Describe any differences between the two organisms.
+ecolilength <- as.numeric(summary(ecoli_cds)[,1])
+sum(ecolilength)
+
+hanserislength <- as.numeric(summary(hanseris_cds)[,1])
+sum(hanserislength)
+
+#commands like `sum` will work on vectors but not strings
+#cannot calculate the sum of strings, so need to use `as.numeric` to convert object to a vector
+
+
+#ANS: ECOLI=3978528 (3.98megabases) length of all cds, HANSERIS= 1534932 (1.53 megabases)
+#length of all cds for ECOLI is 2.5 times greater than HANSERIS
+
+#q2Make a boxplot of coding sequence length in these organisms. 
+boxplot(ecolilength,hanserislength,
+        names=c("E.Coli K-12 (GCA_000005845)", "H.Anseris (GCA_003364335)"),
+        ylab="Coding Sequence Length (bp)")
+grid()
+#
+
+
+#q2 What is the mean and median coding sequence length of these two organisms? Describe any differences between the two organisms.
+mean(ecolilength)
+median(ecolilength)
+
+mean(hanserislength)
+median(hanserislength)
+#ANS: mean ECOLI = 939 HANSERI = 973
+#ANS: median ECOLI = 831 HANSERI = 816
+
+#despite ecoli have 2x as many cds and length of all cds, the mean and median length of each cds is similar between organisms. 
+#minor difference is that hanseris has some cds that are >8000bp, whereas all cds for ecoli are <8000bp. 
+
+
+#q3. Calculate the **frequency** of DNA bases in the total coding sequences for both organisms. 
+#Perform the same calculation for the total protein sequence. Create bar plots for nucleotide and amino acid
+# frequency. Describe any differences between the two organisms.
+
+#calc the freq of each DNA bases, so looking at how often A G T and C come up. wordsize =1 
+#count(sequence[[]],wordsize=)
+#count command needs a VECTOR [[]], not a list []
+#so use unlist first and save these as new objects in environment
+
+ecoli_dna <- unlist(ecoli_cds)
+hanseris_dna <- unlist(hanseris_cds)
+
+ecoli_ntfreq <- count(ecoli_dna,1)
+hanseris_ntfreq <- count(hanseris_dna,1)
+
+barplot(ecoli_ntfreq,ylab = "frequency", xlab = "nucleotide", main = "E. Coli CDS composition")
+options(scipen = 999)
+
+#place two objects on the one bar graph:
+#https://stackoverflow.com/questions/53711219/trying-to-combine-multiple-datasets-into-one-bar-graph-in-r
+barplot(as.matrix(rbind(ecoli_ntfreq, hanseris_ntfreq)), beside=TRUE, ylab="frequency", 
+        xlab = "nucleotide", main = "E. Coli vs H.Anseris CDS composition")
+
+#change colours of bars and include legend
+#https://stackoverflow.com/questions/13936223/legends-in-barplot-not-appearing-properly
+barplot(as.matrix(rbind(ecoli_ntfreq, hanseris_ntfreq)), beside=TRUE, ylab="frequency", ylim = c(0,1200000), 
+        xlab = "nucleotide", main = "E. Coli vs H.Anseris CDS composition",col = c("#009999","#FF9933"))
+legend("topright", 
+       legend = c("E.Coli", "H.Anseri"), 
+       fill = c("#009999","#FF9933"))
+grid()
+
+#great but this is not normalised! 
+
+#ntproportion = ntfreq/sum(ntfreq)
+ecoli_ntprop <- ecoli_ntfreq/sum(ecoli_ntfreq)
+hanseris_ntprop <- hanseris_ntfreq/sum(hanseris_ntfreq)
+
+barplot(as.matrix(rbind(ecoli_ntprop, hanseris_ntprop)), beside=TRUE, ylab="nucleotide proportion", ylim = c(0,0.50), 
+        xlab = "nucleotide", main = "E. Coli vs H.Anseris CDS composition",col = c("#009999","#FF9933"))
+legend("topright", 
+       legend = c("E.Coli", "H.Anseri"), 
+       fill = c("#009999","#FF9933"))
+grid()
+
+#ANS: Hanseri higher proportion of AT while ecoli has a higher proportion of GC.
+# can i find an article that backs this up? Link this to citation
