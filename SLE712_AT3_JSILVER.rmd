@@ -1,15 +1,26 @@
 ---
 title: 'SLE712 AT3: BIoinformatics Assignment'
 author: "Jessica Silver"
-date: '2022-05-07'
+date: 2022-06-03
 output: html_document
+theme: paper
+  
 ---
 
-source: LINK TO GITHUB REPO
+source: https://github.com/jessicasilver/sle712_at3
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+**include some details about the data, where to access it and how to download
+**if you have r installed, this is how you would run this and 
+
+*don't include html in the repository
+*just the code and the depository
+*do not include the data files or the fasta files
+*can delte files on github, then do a pull on rstudip
+*but the object still lives in R directory. yay
 
 ## Including Plots
 
@@ -21,11 +32,30 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-#### Set Up Instructions 
 
-Include some details here about packages that must be installed prior to running these codes. This information may also be included in the readme 
+#### Introduction
+
+This Rmarkdown document contains written explanations and answers to Part 1 (Q1-10) and Part 2 (Q1-6) of SLE712: AT3 - Bioinformatics Report. 
+
+**Part 1:** 
+
+Q1-5 relate to gene expression data from three samples (accessible [here](https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/bioinfo_asst3_part1_files/gene_expression.tsv)). 
+Q6-10 relate to tree growth data collected from two sites during a longitudinal study (accessible [here](https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/bioinfo_asst3_part1_files/growth_data.csv))
 
 
+To access each dataset, follow the link above, right click on the appropriate file name and "copy link address". Each file was read into Rstudio and is detailed in the code chunks below. 
+
+
+**Part 2:**
+
+The [E. Coli](http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655_gca_000005845/) and [H. Anseris](http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_51_collection/helicobacter_anseris_gca_003364335/) coding sequence datasets were downloaded from [Ensembl](https://bacteria.ensembl.org/info/data/ftp/index.html).
+
+
+To access the compressed fasta files, click on the "cds" folder, right click on the file and "copy link address". For convenience, these links are also embedded into the code chunks below. 
+
+#### Set Up Instructions
+
+Prior to running all commands, please ensure that `seqinr`, `kableExtra` and `R.utils` packages are installed. 
 
 ```{r setupinstructions}
 suppressPackageStartupMessages({
@@ -36,74 +66,78 @@ library("R.utils")
 
 ```
 
+***
+
 ### Part 1
 #### Question 1. Read in the file, making the gene identifiers the row names. Show a table of values for the first six genes. 
 
 The link to the file (URL) was first defined as "gene.expression.URL". The table was then read in to Rstudio using the `read.table` command. 
 
-The structure of the file was first viewed using `str(df)`. 
+As a default, integers were given as row and column names. `header=TRUE` and `row.names = 1` were included in the `read.table(df)` command to make the gene identifiers the row names. The dataframe was named "gene.expression.tsv".
 
-As a default, integers were given as row and column names. 
+A table for values for the first six genes was generated using the `df[row,columns]` command structure. As all columns for the first 6 genes (rows) were requested, the command reads `gene.expression.tsv[1:6,]` 
 
-`header=TRUE` and `row.names = 1` were included in the `read.table(df)` command to make the gene identifiers the row names. The object was named "gene.expression.tsv".
-
-A table for values for the first six genes was generated using the `df[row,columns]` command structure. As all columns for the first 6 genes (rows) were requested, the command reads `gene.expression.tsv[1:6,]` **CHANGE THIS: USING kable AND APPROPRIATE COMMANDS. 
+The `kableExtra` package was used to format the table from the standard R console output to a reader-friendly table. 
 
 
 ``` {r gene.expression.tsv-codechunk1}
 gene.expression.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/gene_expression.tsv"
 gene.expression.tsv <- read.table(gene.expression.URL,stringsAsFactors = FALSE, header=TRUE, row.names = 1)
 
-gene.expression.tsv[1:6,]
+gene.expression.tsv[1:6,] %>%
+  kbl(caption = "Table 1. Part 1 Question 1: Gene Expression dataset showing values for the first six genes") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 12) 
 ```
-**Table 1.** Part 1 Question 1. Table of values for the first six genes.
+
 
 
 
 #### Question 2. Make a new column which is the mean of the other columns. Show a table of values for the first six genes.
-`rowmeans(df)` was used to calculate average gene expression between the three samples of interest for all genes. 
+`rowMeans(df)` was used to calculate average gene expression between the three samples of interest for all genes. 
 
 A new column containing the average gene expression was added to the "gene.expression.tsv" dataframe using `df$newcolumnname` notation. 
 
-A table for values for the first six genes was generated using the `df[row,columns]` command structure as described above. 
+A table for values for the first six genes was generated using the `df[row,columns]` command structure as described above and formatted using the `kableExtra` package. 
 
 ``` {r gene.expression.tsv-codechunk2}
 gene.expression.tsv$GE.Means <- rowMeans(gene.expression.tsv)
-gene.expression.tsv[1:6,]
+gene.expression.tsv <- round(gene.expression.tsv, digits = 0)
+
+gene.expression.tsv[1:6,] %>%
+  kbl(caption = "Table 2. Part 1 Question 2: Gene Expression dataset showing values for the first six genes in each sample, and the mean expression across all samples.") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 12) 
 ```
-**Table 2.** Part 1 Question 2. Table of values for the first six genes, including new "Mean Gene Expression" Column. 
 
 
 
 #### Question 3. List the 10 genes with the highest mean expression
-`order()` cmd sorts from lowest to highest numerical value as a default. Therefore, the lowest gene expression values will be presented first. 
+`order()` sorts from lowest to highest numerical value as a default. Therefore, the lowest gene expression values will be presented first. 
+
 As we want to report the 10 genes with the highest mean expression, the command was modified to `order(-)` to reverse sort the data from highest to lowest. 
+
 `df[row,columns]` format used. Question asks to sort the genes, which are the row names. Therefore `order(-)` is placed in the first part of `[]` and columns section is left blank. 
 
-The sorted dataset was named "reverse_sortedGEmeans"
-
-`df[row,column]` was executed to show a specific part of the dataframe. 
-`[1:10,n]` shows the first 10 rows corresponding to 10 highest genes
-`[n,4]` 4 corresponds to the fourth column in the df = Mean Gene Expression
-`[n,n,drop=FALSE]` to retain the dimesions of the object.
+The sorted dataset was named "reverse_sortedGEmeans" and `df[row,column]` was executed to show a specific part of the dataframe  and formatted using the `kableExtra` package. 
  
 
 ``` {r gene.expression.tsv-codechunk3}
 reverse_sortedGEMeans <- gene.expression.tsv[order(-gene.expression.tsv$GE.Means),]
-reverse_sortedGEMeans[1:10,4,drop=FALSE] #drop=FALSE retains the dimension of the object
+
+reverse_sortedGEMeans[1:10,4,drop=FALSE] %>% #drop=FALSE retains the dimension of the object
+  kbl(caption = "Table 3. Part 1 Question 3: Gene Expression dataset showing the 10 genes with the highest mean expression across the three samples.") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 12) 
 ```
-**Table 3.** Part 1 Question 3. Table showing the top 10 genes with the highest mean expression across the three samples. 
+
 
 #### Question 4. Determine the number of genes with a mean < 10
 `nrow()` is the base command used to return the number of genes (i.e rows) in the dataframe.
 
-The number of genes with a mean < 10 was determined using the `df[row,column]` command and embedded into `nrow`.
+The condition "number of genes with a mean < 10" was determined using the `df[row,column]` command and embedded into `nrow`.
 
-`print` may be used to return the number of genes with a mean less than 10. 
+**ANSWER: ** There are 35,869 genes with a mean expression less than 10. 
 
 
 ```{r gene.expression.tsv-codechunk4}
-nrow(gene.expression.tsv[gene.expression.tsv$GE.Means <10,])
 print(nrow(gene.expression.tsv[gene.expression.tsv$GE.Means <10,]))
 ```
 
@@ -113,17 +147,32 @@ The `df$columnname` was specified, header included using `main=""` and x axis ti
 
 x and y axis limits were specified using `xlim=()` and `ylim=()`, respectively.
 
-```{r gene.expression.tsv-codechunk5}
+```{r gene.expression.tsv-codechunk5A}
 hist(gene.expression.tsv$GE.Means,main="Part-1 Q-5: Mean Gene Expression Values", xlab="Mean Gene Expression",breaks="scott",xlim=c(0,10000),ylim = c(0,50000))
 ```
 
-**Table 4.** Part 1 Question 5. 
+**Figure 1A. ** Part 1 Question 5: Histogram showing the frequency of mean gene expression from the "gene expression" dataset. 
+
+Figure 1A shows over 40,000 genes that have a mean expression less than 100. 
+For greater resolution of genes that have a mean expression of over 2000, the x- and y-axis limits were adjusted. 
+
+```{r gene.expression.tsv-codechunk5B}
+hist(gene.expression.tsv$GE.Means,main="Part-1 Q-5: Mean Gene Expression Values (truncated)", 
+     xlab="Mean Gene Expression",breaks="scott",xlim=c(2000,600000),ylim = c(0,100))
+options(scipen = 999)
+```
+
+**Figure 1B. ** Part 1 Question 5: Truncated histogram showing the frequency genes with a mean gene expression over 2000.
+
+***
 
 
 #### Question 6. Import the “growth_data.csv” file into an R object. What are the column names?
 The link to the file (URL) was first defined as "growth.data.URL". The csv file was then read in to Rstudio using the `read.csv` command and named "growth.data.csv"
 
-`colnames(df)` was used to extract the column names, and prints "Site", "Tree ID", "Circumf_2005_cm", ", Circumf_2010_cm", "Circumf_2015_cm" and "Circumf_2020_cm"
+`colnames(df)` was used to extract the column names, and prints the name of each column.
+
+**ANSWER: ** The column names are: Site, Tree ID, Circumf_2005_cm, Circumf_2010_cm, Circumf_2015_cm, and Circumf_2020_cm.
 
 ```{r growth_data.csv-codechunk1}
 growth.data.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/growth_data.csv"
@@ -133,12 +182,12 @@ colnames(growth.data.csv)
 
 #### Question 7. Calculate the mean and standard deviation of tree circumference at the start and end of the study at both sites.
 
-From the column names, the start of the study is "Circumf_2005_cm" (2005) and the end of the stuydy is "Circumf_2020_cm" (2020). There are two sites named "northeast" and "southwest". 
+From the column names, the start of the study is "Circumf_2005_cm" (2005) and the end of the study is "Circumf_2020_cm" (2020). There are two sites named "northeast" and "southwest". 
 
 `grep` was used to create new separate objects for each site ("NEsite" and "SWsite").
-A `list()` was created containing ... 
+A `list()` was created containing growth data from each site at the start (2005) and end (2020) of the study. 
 
-A new function was defined ("GDmeansd") that requires one input and will print the mean and SD of the input. 
+A new function was defined ("GDmeansd") that requires one input (x) and will print the mean and SD of the input. 
 
 `lapply` was used to calculate the mean and SD growth of trees at each site at the start and end of each in one command. 
 
@@ -161,26 +210,26 @@ lapply(X=bothsites, FUN = GDmeansd)
 
 #### Question 8. Make a box plot of tree circumference at the start and end of the study at both sites.
 
-`boxplot()` used to generate a box plot. 
+`boxplot()` used to generate a box plot containing both NEsite and SWsite data in the one figure. 
 
 ```{r growth_data.csv-codechunk3}
 boxplot(NEsite$Circumf_2005_cm,  SWsite$Circumf_2005_cm, 
         NEsite$Circumf_2020_cm, SWsite$Circumf_2020_cm,
         names=c("Northeast 2005", "Southwest 2005", "Northeast 2020", "Southwest 2020"),
         ylab="Tree Circumference (cm)",ylim=c(0,120))
-grid()
+grid() #overlay grid onto figure 
 ```
 
-**Figure 1** Box plot showing tree circumference (cm) at the start (2005) and end (2020) of observations at both the northeast and southwest sites. 
+**Figure 2. ** Box plot showing tree circumference (cm) at the start (2005) and end (2020) of observations at both the northeast (NEsite) and southwest (SWsite) sites. 
 
 
 #### Question 9. Calculate the mean growth over the last 10 years at each site.
 
-A `function` with two inputs `(x,y)` was used to first calculate the growth over the last 10 years at each site. 
+A `function` with two inputs `(x,y)` was used to first calculate the growth of each tree over the last 10 years ("growth10") at each site. 
 
-10 years = `$Circumf_2020 - $Circumf_2010` 
+"growth10" = `$Circumf_2020 - $Circumf_2010` 
 
-Next, `mean()` command was used to calculate the average 10 year growth each site. 
+Next, `mean()` was used to calculate the average 10 year growth of all trees each site. 
 
 The function "mean10year" was then run on the previously defined "NEsite" and "SWsite" subsets. 
 
@@ -205,25 +254,151 @@ mean10year(SWsite$Circumf_2020_cm,SWsite$Circumf_2010_cm)
 
 #### Question 10. Use the t.test and wilcox.test functions to estimate the p-value that the 10 year growth is different at the two sites.
 
-10 year growth from the NE and SW sites (`$Circumf_2020 - $Circumf_2010`) was carried forward from question 9. 
+The 10 year growth from the NE and SW sites (`$Circumf_2020 - $Circumf_2010`) was carried forward from question 9. 
 
-`t.test()` command with two inputs was performed to estimate the p value of the 10 year growth between each site. The output was saved as a new object ("ttest10year"). The p value from this ttest was printed to the user using the `print` function.
+`t.test()` and `wilcox.test` commands with two inputs was performed to estimate the p value of the 10 year growth between each site. The output of each statistical test was saved as a new list. The p value from this ttest was printed to the user using the `print` function.
 
-An `if/else` command was incorporated to tell the user if the p value is statistically significant (p<0.05). 
+An `if/else` command was incorporated to tell the user if the p value is statistically significant, using a threshold of p<0.05. 
 
 ```{r growth_data.csv-codechunk5}
 NEgrowth <- NEsite$Circumf_2020_cm - NEsite$Circumf_2010_cm
 SWgrowth <- SWsite$Circumf_2020_cm - SWsite$Circumf_2010_cm
   
-ttest10year <- t.test(NEgrowth,SWgrowth)
-print(signif(ttest10year$p.value,3))
+ttest10year <- t.test(NEgrowth,SWgrowth) #ttest
 
 if (ttest10year$p.value < 0.05) {
-  message("Mean growth is significantly different (p=", signif(ttest10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
+  message("T-TEST: Mean growth is significantly different (p=", signif(ttest10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
 } else {
-  message("Mean growth is not significantly different (p>0.05) between the NE and SW sites over the last 10 years.")
+  message("T-TEST: Mean growth is not significantly different (p=", signif(ttest10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
+}
+
+wilcox10year <- wilcox.test(NEgrowth,SWgrowth) #wilcox test, data must be numeric
+
+if (wilcox10year$p.value < 0.05) {
+  message("WILCOX-TEST: Mean growth is significantly different (p=", signif(wilcox10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
+} else {
+  message("WILCOX-TEST: Mean growth is not significant different (p=", signif(wilcox10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
 }
 ```
 
+***
 
+
+### Part 2
+#### Question 1. Download the whole set of coding DNA sequences for E. coli and your organism of interest. How many coding sequences are present in these organisms? How much coding DNA is there in total for these two organisms? Describe any differences between the two organisms.
+
+The coding DNA sequences (cds) for E.Coli (GCA_000005845) and H.Anseris (GCA_003364335) were downloaded in .fa.gz formats from the Ensembl Bacteria databases **REF TO https://bacteria.ensembl.org/info/data/ftp/index.html** Each URL was saved as a unique object ("ecoliK12URL").
+
+`download.file()` was used to download data from the URL. The file name was specified in `destfile=""`
+
+As the downloaded file was compressed (.gz file type), each file was unzipped using the `gunzip("")` command. The .fa CDS file was stored as a new object (i.e. "ecoli_cds"). The object is in list format (`str(head(listname))`), where each element of the list is a unique CDS.  
+
+The `seqinr` package was used to perform exploratory analyses on the sequence data. 
+
+`length(listname)` was used to determine the number of CDS present in each organism. 
+
+
+```{r part2q1}
+ecoliK12URL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655_gca_000005845/cds/Escherichia_coli_str_k_12_substr_mg1655_gca_000005845.ASM584v2.cds.all.fa.gz"
+download.file(ecoliK12URL,destfile = "ecoli_cds.fa.gz")
+gunzip("ecoli_cds.fa.gz")
+
+hanserisURL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_51_collection/helicobacter_anseris_gca_003364335/cds/Helicobacter_anseris_gca_003364335.ASM336433v1.cds.all.fa.gz"
+download.file(hanserisURL,destfile = "hanseris_cds.fa.gz")
+gunzip("hanseris_cds.fa.gz")
+
+ecoli_cds <- seqinr::read.fasta("ecoli_cds.fa")
+str(head(ecoli_cds))
+length(ecoli_cds)   
+
+hanseris_cds <- seqinr::read.fasta("hanseris_cds.fa")
+length(hanseris_cds)
+```
+
+**ANS: ** E.Coli has 4239 CDS. H.Anseri has 1578 CDS. **INCL. Q1 PART3**
+
+#### Question 2. Calculate the length of all coding sequences in these two organisms. Make a boxplot of coding sequence length in these organisms. What is the mean and median coding sequence length of these two organisms? Describe any differences between the two organisms.
+
+The basic function `sum` was modified to calculate the length of all coding sequences in each organisms. 
+
+`sum` will work on vectors but not strings. 
+`head(summary(listname))` shows that the data in ecoli_cds and hanseris_cds is presented as character string. This first needs to be converted to a vector using `as.numeric`, focusing on the the length column `[,1]`
+
+The length of each element in the list is saved as a new object (i.e. "ecolilength"). 
+
+Tot length of all CDS in each organism was then calculated using `sum()`
+
+`mean()` and `median()` functions were executed to calculate the mean and median coding sequence length in each organism. 
+
+`boxplot()` was modified to include the CDS length data from each organism in the figure. Names were given to each box and a y-axis label was added. 
+
+`grid()` was used to overlay a grid to the boxplot for....  
+
+```{r part2q2}
+head(summary(ecoli_cds))
+ecolilength <- as.numeric(summary(ecoli_cds)[,1])
+sum(ecolilength)
+
+hanserislength <- as.numeric(summary(hanseris_cds)[,1])
+sum(hanserislength)
+
+mean(ecolilength)
+median(ecolilength)
+
+mean(hanserislength)
+median(hanserislength)
+
+boxplot(ecolilength,hanserislength,
+        names=c("E.Coli K-12 (GCA_000005845)", "H.Anseris (GCA_003364335)"),
+        ylab="Coding Sequence Length (bp)")
+grid()
+```
+
+**FIGURE LEGEND NEEDED HERE** 
+
+
+**ANS: **
+E.Coli 
+total CDS length = 3978528 (3.99 MB)
+mean = 939 bp
+median = 831 bp
+
+H.Anseris 
+total CDS length = 1534932 (1.53 MB)
+mean = 973 bp
+median = 816 bp
+
+*CAN I MAKE A NEW DF AND PUT THIS ALL INTO A SNAZZY TABLE?* 
+
+The total CDS length is approximately 2.6 times greater in E.Coli when compared to H.Anseris. Despite this, the mean and median length of each is roughly comparable between the two organisms **(TABLE/FIG)**. Additionally, H.Anseris includes a small numer of longer CDS (>8000 bp in length), whereas all CDS for E.Coli are less than 8000 bp (**BOXPLOT FIG REF**). 
+
+
+#### Question 3. Calculate the frequency of DNA bases in the total coding sequences for both organisms. Perform the same calculation for the total protein sequence. Create bar plots for nucleotide and amino acid frequency. Describe any differences between the two organisms.
+
+- Told the alphabet
+- used sequence
+
+
+Given that the total coding sequence length was approximately 2.X times greater in E.Coli when compared to H.Anseri, the frequency each DNA bases was normalised to 
+
+```{r part2q3}
+
+```
+
+#### Question 4. Create a codon usage table and quantify the codon usage bias among all coding sequences. Describe any differences between the two organisms with respect to their codon usage bias. Provide charts to support your observations.
+
+```{r part2q4}
+
+```
+
+#### Question 5. In the organism of interest, identify 10 protein sequence k-mers of length 3-5 which are the most over- and under-represented k-mers in your organism of interest. Are these k-mers also over- and under-represented in E. coli to a similar extent? Provide plots to support your observations. Why do you think these sequences are present at different levels in the genomes of these organisms?
+
+```{r part2q5}
+
+```
+
+
+```{r sessionInfo}
+sessionInfo()
+```
 **make sure to include session info before submitting. this must include kable, and other packages used in week10**
