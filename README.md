@@ -145,7 +145,7 @@ Interestingly, codons for Arginine are among both the most (AGA) and least (CGG)
 However, there are multiple amino acid 3-mers that are not detected (frequency = 0) in H.Anseris.
 
 LLL is the only amino acid 3-mer present in the over-represented k-mers of both organisms.
-The over-represented 3-mers in H.Anseris show a high frequency of K, I and N: a higher proportion of these amino acids is present in H.Anseris when compared to E.Coli *(Figure 5B)*.
+The over-represented 3-mers in H.Anseris show a high frequency of K, I and N: a higher proportion of these amino acids is present in H.Anseris when compared to E.Coli *(Figure 5B)*. 
 
 *4-mers: * The under-represented amino acid 4-mers all have a zero frequency in both E.Coli and H.Anseris and are ordered in alphabetical order (by amino acid single letter). 
 At this resolution, it is not possible to identify similarities or differences between the under-represented amino acid 5-mers between organisms. 
