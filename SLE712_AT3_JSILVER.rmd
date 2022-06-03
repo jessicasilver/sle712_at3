@@ -370,7 +370,7 @@ ecoli_5merfreq_ordered[c(1:10,3199991:3200000)] %>%
   kbl(caption = "Table 6C. Part 2 Question 5: E.Coli. 10 under-represented (teal shading) over-represented (white) amino acid 5-mers") %>%
   kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
   row_spec(1:10, color = "white", background = "#006666") %>% 
-  row_spec(11:20, color = "#009999", background = "White")
+  row_spec(11:20, color = "#009999", background = "White") 
 
 
 #now repeated for 3-, 4- and 5-mers using the hanseris_prots sequence

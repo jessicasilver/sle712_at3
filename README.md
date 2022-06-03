@@ -147,7 +147,7 @@ However, there are multiple amino acid 3-mers that are not detected (frequency =
 LLL is the only amino acid 3-mer present in the over-represented k-mers of both organisms.
 The over-represented 3-mers in H.Anseris show a high frequency of K, I and N: a higher proportion of these amino acids is present in H.Anseris when compared to E.Coli *(Figure 5B)*. 
 
-*4-mers: * The under-represented amino acid 4-mers all have a zero frequency in both E.Coli and H.Anseris and are ordered in alphabetical order (by amino acid single letter). 
+*4-mers: * The under-represented amino acid 4-mers all have a zero frequency in both E.Coli and H.Anseris and are ordered in alphabetical order (by amino acid single letter).  
 At this resolution, it is not possible to identify similarities or differences between the under-represented amino acid 5-mers between organisms. 
 
 Over-represented amino acid 4-mers in E.Coli exclusively contain A and L. A and L display the highest proportion in E.Coli when compared to all other amino acids *(Figure 5B)*.
