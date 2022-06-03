@@ -13,46 +13,6 @@ source: https://github.com/jessicasilver/sle712_at3
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**include some details about the data, where to access it and how to download
-**if you have r installed, this is how you would run this and 
-
-*don't include html in the repository
-*just the code and the depository
-*do not include the data files or the fasta files
-*can delte files on github, then do a pull on rstudip
-*but the object still lives in R directory. yay
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-#### Introduction
-
-This Rmarkdown document contains written explanations and answers to Part 1 (Q1-10) and Part 2 (Q1-6) of SLE712: AT3 - Bioinformatics Report. 
-
-**Part 1:** 
-
-Q1-5 relate to gene expression data from three samples (accessible [here](https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/bioinfo_asst3_part1_files/gene_expression.tsv)). 
-Q6-10 relate to tree growth data collected from two sites during a longitudinal study (accessible [here](https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/bioinfo_asst3_part1_files/growth_data.csv))
-
-
-To access each dataset, follow the link above, right click on the appropriate file name and "copy link address". Each file was read into Rstudio and is detailed in the code chunks below. 
-
-
-**Part 2:**
-
-The [E. Coli](http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655_gca_000005845/) and [H. Anseris](http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_51_collection/helicobacter_anseris_gca_003364335/) coding sequence datasets were downloaded from [Ensembl](https://bacteria.ensembl.org/info/data/ftp/index.html).
-
-
-To access the compressed fasta files, click on the "cds" folder, right click on the file and "copy link address". For convenience, these links are also embedded into the code chunks below. 
-
 #### Set Up Instructions
 
 Prior to running all commands, please ensure that `seqinr`, `kableExtra` and `R.utils` packages are installed. 
@@ -71,81 +31,54 @@ library("R.utils")
 ### Part 1
 #### Question 1. Read in the file, making the gene identifiers the row names. Show a table of values for the first six genes. 
 
-The link to the file (URL) was first defined as "gene.expression.URL". The table was then read in to Rstudio using the `read.table` command. 
-
-As a default, integers were given as row and column names. `header=TRUE` and `row.names = 1` were included in the `read.table(df)` command to make the gene identifiers the row names. The dataframe was named "gene.expression.tsv".
-
-A table for values for the first six genes was generated using the `df[row,columns]` command structure. As all columns for the first 6 genes (rows) were requested, the command reads `gene.expression.tsv[1:6,]` 
-
-The `kableExtra` package was used to format the table from the standard R console output to a reader-friendly table. 
-
 
 ``` {r gene.expression.tsv-codechunk1}
-gene.expression.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/gene_expression.tsv"
-gene.expression.tsv <- read.table(gene.expression.URL,stringsAsFactors = FALSE, header=TRUE, row.names = 1)
+gene.expression.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/gene_expression.tsv" #link to file
+gene.expression.tsv <- read.table(gene.expression.URL,stringsAsFactors = FALSE, header=TRUE, row.names = 1) #row.names = 1 to keep gene identifiers as row names, not integers
 
-gene.expression.tsv[1:6,] %>%
+gene.expression.tsv[1:6,] %>% #show first 6 genes/rows #pipe to kableExtra
   kbl(caption = "Table 1. Part 1 Question 1: Gene Expression dataset showing values for the first six genes") %>%
   kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 12) 
 ```
 
-
-
+***
 
 #### Question 2. Make a new column which is the mean of the other columns. Show a table of values for the first six genes.
-`rowMeans(df)` was used to calculate average gene expression between the three samples of interest for all genes. 
 
-A new column containing the average gene expression was added to the "gene.expression.tsv" dataframe using `df$newcolumnname` notation. 
-
-A table for values for the first six genes was generated using the `df[row,columns]` command structure as described above and formatted using the `kableExtra` package. 
 
 ``` {r gene.expression.tsv-codechunk2}
-gene.expression.tsv$GE.Means <- rowMeans(gene.expression.tsv)
-gene.expression.tsv <- round(gene.expression.tsv, digits = 0)
+gene.expression.tsv$GE.Means <- rowMeans(gene.expression.tsv) #calculate average gene expression between the three samples of interest for all genes.
+gene.expression.tsv <- round(gene.expression.tsv, digits = 0) #round to no decimal places as in original dataset
 
-gene.expression.tsv[1:6,] %>%
+gene.expression.tsv[1:6,] %>% #show first 6 genes/rows #pipe to kableExtra
   kbl(caption = "Table 2. Part 1 Question 2: Gene Expression dataset showing values for the first six genes in each sample, and the mean expression across all samples.") %>%
   kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 12) 
 ```
 
-
+***
 
 #### Question 3. List the 10 genes with the highest mean expression
-`order()` sorts from lowest to highest numerical value as a default. Therefore, the lowest gene expression values will be presented first. 
-
-As we want to report the 10 genes with the highest mean expression, the command was modified to `order(-)` to reverse sort the data from highest to lowest. 
-
-`df[row,columns]` format used. Question asks to sort the genes, which are the row names. Therefore `order(-)` is placed in the first part of `[]` and columns section is left blank. 
-
-The sorted dataset was named "reverse_sortedGEmeans" and `df[row,column]` was executed to show a specific part of the dataframe  and formatted using the `kableExtra` package. 
- 
 
 ``` {r gene.expression.tsv-codechunk3}
-reverse_sortedGEMeans <- gene.expression.tsv[order(-gene.expression.tsv$GE.Means),]
+reverse_sortedGEMeans <- gene.expression.tsv[order(-gene.expression.tsv$GE.Means),] #order(-df$colname) to sort data from highest to lowest
 
-reverse_sortedGEMeans[1:10,4,drop=FALSE] %>% #drop=FALSE retains the dimension of the object
+reverse_sortedGEMeans[1:10,4,drop=FALSE] %>% #drop=FALSE retains the dimension of the object #pipe to kableExtra
   kbl(caption = "Table 3. Part 1 Question 3: Gene Expression dataset showing the 10 genes with the highest mean expression across the three samples.") %>%
   kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 12) 
 ```
 
+***
 
 #### Question 4. Determine the number of genes with a mean < 10
-`nrow()` is the base command used to return the number of genes (i.e rows) in the dataframe.
-
-The condition "number of genes with a mean < 10" was determined using the `df[row,column]` command and embedded into `nrow`.
-
-**ANSWER: ** There are 35,869 genes with a mean expression less than 10. 
 
 
 ```{r gene.expression.tsv-codechunk4}
-print(nrow(gene.expression.tsv[gene.expression.tsv$GE.Means <10,]))
+print(nrow(gene.expression.tsv[gene.expression.tsv$GE.Means <10,])) #nrow with condition "number genes with a mean < 10"
 ```
 
-#### Question 5. Make a histogram plot of the mean values and include it into your report.
-`hist()` command used to plot a histogram of the mean values. 
-The `df$columnname` was specified, header included using `main=""` and x axis title included using `xlab=""`. 
+***
 
-x and y axis limits were specified using `xlim=()` and `ylim=()`, respectively.
+#### Question 5. Make a histogram plot of the mean values and include it into your report.
 
 ```{r gene.expression.tsv-codechunk5A}
 hist(gene.expression.tsv$GE.Means,main="Part-1 Q-5: Mean Gene Expression Values", xlab="Mean Gene Expression",breaks="scott",xlim=c(0,10000),ylim = c(0,50000))
@@ -159,58 +92,46 @@ For greater resolution of genes that have a mean expression of over 2000, the x-
 ```{r gene.expression.tsv-codechunk5B}
 hist(gene.expression.tsv$GE.Means,main="Part-1 Q-5: Mean Gene Expression Values (truncated)", 
      xlab="Mean Gene Expression",breaks="scott",xlim=c(2000,600000),ylim = c(0,100))
-options(scipen = 999)
+options(scipen = 999) #turn off scientific notation
 ```
 
 **Figure 1B. ** Part 1 Question 5: Truncated histogram showing the frequency genes with a mean gene expression over 2000.
 
 ***
 
-
 #### Question 6. Import the “growth_data.csv” file into an R object. What are the column names?
-The link to the file (URL) was first defined as "growth.data.URL". The csv file was then read in to Rstudio using the `read.csv` command and named "growth.data.csv"
-
-`colnames(df)` was used to extract the column names, and prints the name of each column.
-
-**ANSWER: ** The column names are: Site, Tree ID, Circumf_2005_cm, Circumf_2010_cm, Circumf_2015_cm, and Circumf_2020_cm.
 
 ```{r growth_data.csv-codechunk1}
-growth.data.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/growth_data.csv"
-growth.data.csv <- read.csv(growth.data.URL)
-colnames(growth.data.csv)
+growth.data.URL <- "https://raw.githubusercontent.com/markziemann/SLE712_files/master/assessment_task3/bioinfo_asst3_part1_files/growth_data.csv" #link to file
+growth.data.csv <- read.csv(growth.data.URL) #read in file
+colnames(growth.data.csv) #print column names
 ```
+
+***
 
 #### Question 7. Calculate the mean and standard deviation of tree circumference at the start and end of the study at both sites.
 
-From the column names, the start of the study is "Circumf_2005_cm" (2005) and the end of the study is "Circumf_2020_cm" (2020). There are two sites named "northeast" and "southwest". 
-
-`grep` was used to create new separate objects for each site ("NEsite" and "SWsite").
-A `list()` was created containing growth data from each site at the start (2005) and end (2020) of the study. 
-
-A new function was defined ("GDmeansd") that requires one input (x) and will print the mean and SD of the input. 
-
-`lapply` was used to calculate the mean and SD growth of trees at each site at the start and end of each in one command. 
 
 ```{r growth_data.csv-codechunk2}
-NEsite <- growth.data.csv[grep("northeast", growth.data.csv$Site), ]
+NEsite <- growth.data.csv[grep("northeast", growth.data.csv$Site), ] #grep for text matching, subset for each site
 SWsite <- growth.data.csv[grep("southwest", growth.data.csv$Site), ]
 
-bothsites <- list(NEsite$Circumf_2005_cm,NEsite$Circumf_2020_cm,SWsite$Circumf_2005_cm,SWsite$Circumf_2020_cm)
-names(bothsites) <- c("NEsite_2005", "NEsite_2020", "SWsite_2005", "SWsite_2020")
+bothsites <- list(NEsite$Circumf_2005_cm,NEsite$Circumf_2020_cm,SWsite$Circumf_2005_cm,SWsite$Circumf_2020_cm) #create a list with data from each site
+names(bothsites) <- c("NEsite_2005", "NEsite_2020", "SWsite_2005", "SWsite_2020") #2005 = start of study #2020 = end of study
 
-GDmeansd <- function (x) {
+GDmeansd <- function (x) { #function with one input
   GDmean <- signif(mean(x),3)
   GDsd <- signif(sd(x),3)
   paste("Mean = ", GDmean , " SD = ", GDsd)
-}
+} #simultaneously calculate mean and SD of x. paste values to user when function is executed
 
-lapply(X=bothsites, FUN = GDmeansd)
+lapply(X=bothsites, FUN = GDmeansd) #execute function on all items in list
 ```
 
+***
 
 #### Question 8. Make a box plot of tree circumference at the start and end of the study at both sites.
 
-`boxplot()` used to generate a box plot containing both NEsite and SWsite data in the one figure. 
 
 ```{r growth_data.csv-codechunk3}
 boxplot(NEsite$Circumf_2005_cm,  SWsite$Circumf_2005_cm, 
@@ -220,57 +141,39 @@ boxplot(NEsite$Circumf_2005_cm,  SWsite$Circumf_2005_cm,
 grid() #overlay grid onto figure 
 ```
 
-**Figure 2. ** Box plot showing tree circumference (cm) at the start (2005) and end (2020) of observations at both the northeast (NEsite) and southwest (SWsite) sites. 
+**Figure 2. ** Box plot showing tree circumference (cm) at the start (2005) and end (2020) of observations at both the northeast and southwest sites. 
 
+***
 
 #### Question 9. Calculate the mean growth over the last 10 years at each site.
 
-A `function` with two inputs `(x,y)` was used to first calculate the growth of each tree over the last 10 years ("growth10") at each site. 
-
-"growth10" = `$Circumf_2020 - $Circumf_2010` 
-
-Next, `mean()` was used to calculate the average 10 year growth of all trees each site. 
-
-The function "mean10year" was then run on the previously defined "NEsite" and "SWsite" subsets. 
-
-The output of the function prints a message including the mean growth of all trees at each site over the past 10 years. 
-
-**ANSWER** 
-
-NE site = 42.94cm
-
-SW site = 35.49cm
 
 ```{r growth_data.csv-codechunk4}
-mean10year <- function (x,y) { 
-  growth10 <- x - y 
-  mean10 <- mean(growth10)
+mean10year <- function (x,y) { #function with two inputs, x = 2020, y = 2010
+  growth10 <- x - y #10yeargrowth = $Circumf_2020 - $Circumf_2010
+  mean10 <- mean(growth10) #mean 10yeargrowth of each
   paste("The mean growth over the past ten years was", mean10 , "cm")
 }
 
-mean10year(NEsite$Circumf_2020_cm,NEsite$Circumf_2010_cm)
+mean10year(NEsite$Circumf_2020_cm,NEsite$Circumf_2010_cm) #run function on NEsite and SWsite (subset in Q7)
 mean10year(SWsite$Circumf_2020_cm,SWsite$Circumf_2010_cm)
 ```
 
+***
+
 #### Question 10. Use the t.test and wilcox.test functions to estimate the p-value that the 10 year growth is different at the two sites.
 
-The 10 year growth from the NE and SW sites (`$Circumf_2020 - $Circumf_2010`) was carried forward from question 9. 
-
-`t.test()` and `wilcox.test` commands with two inputs was performed to estimate the p value of the 10 year growth between each site. The output of each statistical test was saved as a new list. The p value from this ttest was printed to the user using the `print` function.
-
-An `if/else` command was incorporated to tell the user if the p value is statistically significant, using a threshold of p<0.05. 
-
 ```{r growth_data.csv-codechunk5}
-NEgrowth <- NEsite$Circumf_2020_cm - NEsite$Circumf_2010_cm
+NEgrowth <- NEsite$Circumf_2020_cm - NEsite$Circumf_2010_cm #define 10yeargrowth at each site
 SWgrowth <- SWsite$Circumf_2020_cm - SWsite$Circumf_2010_cm
   
-ttest10year <- t.test(NEgrowth,SWgrowth) #ttest
+ttest10year <- t.test(NEgrowth,SWgrowth) #ttest with two inputs (two sites)
 
-if (ttest10year$p.value < 0.05) {
+if (ttest10year$p.value < 0.05) { #pull out p value
   message("T-TEST: Mean growth is significantly different (p=", signif(ttest10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
 } else {
   message("T-TEST: Mean growth is not significantly different (p=", signif(ttest10year$p.value,3), ") between the NE and SW sites over the last 10 years.")
-}
+} #if/else command tells the user if the pvalue is statistically significant (threshold p<0.05)
 
 wilcox10year <- wilcox.test(NEgrowth,SWgrowth) #wilcox test, data must be numeric
 
@@ -287,118 +190,222 @@ if (wilcox10year$p.value < 0.05) {
 ### Part 2
 #### Question 1. Download the whole set of coding DNA sequences for E. coli and your organism of interest. How many coding sequences are present in these organisms? How much coding DNA is there in total for these two organisms? Describe any differences between the two organisms.
 
-The coding DNA sequences (cds) for E.Coli (GCA_000005845) and H.Anseris (GCA_003364335) were downloaded in .fa.gz formats from the Ensembl Bacteria databases **REF TO https://bacteria.ensembl.org/info/data/ftp/index.html** Each URL was saved as a unique object ("ecoliK12URL").
-
-`download.file()` was used to download data from the URL. The file name was specified in `destfile=""`
-
-As the downloaded file was compressed (.gz file type), each file was unzipped using the `gunzip("")` command. The .fa CDS file was stored as a new object (i.e. "ecoli_cds"). The object is in list format (`str(head(listname))`), where each element of the list is a unique CDS.  
-
-The `seqinr` package was used to perform exploratory analyses on the sequence data. 
-
-`length(listname)` was used to determine the number of CDS present in each organism. 
-
 
 ```{r part2q1}
-ecoliK12URL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655_gca_000005845/cds/Escherichia_coli_str_k_12_substr_mg1655_gca_000005845.ASM584v2.cds.all.fa.gz"
-download.file(ecoliK12URL,destfile = "ecoli_cds.fa.gz")
-gunzip("ecoli_cds.fa.gz")
+ecoliK12URL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655_gca_000005845/cds/Escherichia_coli_str_k_12_substr_mg1655_gca_000005845.ASM584v2.cds.all.fa.gz" #link to URL
+download.file(ecoliK12URL,destfile = "ecoli_cds.fa.gz") #download file (compressed)
+gunzip("ecoli_cds.fa.gz") #unzip file. returns a file in list format. Each element of list is a unique CDS
 
 hanserisURL="http://ftp.ensemblgenomes.org/pub/bacteria/release-53/fasta/bacteria_51_collection/helicobacter_anseris_gca_003364335/cds/Helicobacter_anseris_gca_003364335.ASM336433v1.cds.all.fa.gz"
 download.file(hanserisURL,destfile = "hanseris_cds.fa.gz")
 gunzip("hanseris_cds.fa.gz")
 
-ecoli_cds <- seqinr::read.fasta("ecoli_cds.fa")
-str(head(ecoli_cds))
-length(ecoli_cds)   
+ecoli_cds <- seqinr::read.fasta("ecoli_cds.fa") #seqinr package used to perform exploratory analyses on seq data
+length(ecoli_cds)  #determine the number of CDS present in each organism 
 
 hanseris_cds <- seqinr::read.fasta("hanseris_cds.fa")
 length(hanseris_cds)
 ```
 
-**ANS: ** E.Coli has 4239 CDS. H.Anseri has 1578 CDS. **INCL. Q1 PART3**
+***
 
 #### Question 2. Calculate the length of all coding sequences in these two organisms. Make a boxplot of coding sequence length in these organisms. What is the mean and median coding sequence length of these two organisms? Describe any differences between the two organisms.
 
-The basic function `sum` was modified to calculate the length of all coding sequences in each organisms. 
-
-`sum` will work on vectors but not strings. 
-`head(summary(listname))` shows that the data in ecoli_cds and hanseris_cds is presented as character string. This first needs to be converted to a vector using `as.numeric`, focusing on the the length column `[,1]`
-
-The length of each element in the list is saved as a new object (i.e. "ecolilength"). 
-
-Tot length of all CDS in each organism was then calculated using `sum()`
-
-`mean()` and `median()` functions were executed to calculate the mean and median coding sequence length in each organism. 
-
-`boxplot()` was modified to include the CDS length data from each organism in the figure. Names were given to each box and a y-axis label was added. 
-
-`grid()` was used to overlay a grid to the boxplot for....  
 
 ```{r part2q2}
-head(summary(ecoli_cds))
-ecolilength <- as.numeric(summary(ecoli_cds)[,1])
-sum(ecolilength)
+ecoli_cdslength <- sapply(X = ecoli_cds , FUN=length) #calculate the length of each element (CDS) in the list of CDS. #save output as a numerical vector
+sum(ecoli_cdslength)
 
-hanserislength <- as.numeric(summary(hanseris_cds)[,1])
-sum(hanserislength)
+hanseris_cdslength <- sapply(X = hanseris_cds , FUN=length)
+sum(hanseris_cdslength) #sum requires vectors, does not work on strings
 
-mean(ecolilength)
-median(ecolilength)
+mean(ecoli_cdslength)
+median(ecoli_cdslength)
 
-mean(hanserislength)
-median(hanserislength)
+mean(hanseris_cdslength)
+median(hanseris_cdslength)
 
-boxplot(ecolilength,hanserislength,
+boxplot(ecoli_cdslength,hanseris_cdslength,
         names=c("E.Coli K-12 (GCA_000005845)", "H.Anseris (GCA_003364335)"),
         ylab="Coding Sequence Length (bp)")
+grid() #overlay grid onto figure
+```
+
+**Figure 3. ** Box plot depicting the coding sequence length (bp) of E.Coli (gCA_000005845) and H.Anseris (GCA_003364335). Data is shown as median and interquartile range, with whiskers representing the upper and lower quartiles. Outliers are represented as individual points.
+
+
+***
+
+#### Question 3. Calculate the frequency of DNA bases in the total coding sequences for both organisms (Q3A). Perform the same calculation for the total protein sequence (Q3B). Create bar plots for nucleotide and amino acid frequency. Describe any differences between the two organisms.
+
+**Q3A: **
+
+```{r part2q3a}
+ecoli_dna <- unlist(ecoli_cds) #count requires vector, not list. #unlist() to convert list of CDS to character strings
+hanseris_dna <- unlist(hanseris_cds)
+
+ecoli_ntfreq <- count(ecoli_dna,1) #count nt (a, g, c, t) frequency #wordsize=single letter = 1
+hanseris_ntfreq <- count(hanseris_dna,1)
+
+barplot(as.matrix(rbind(ecoli_ntfreq, hanseris_ntfreq)), beside=TRUE, ylab="frequency", ylim = c(0,1200000), xlab = "nucleotide", main = "E. Coli vs H.Anseris CDS composition",col = c("#009999","#FF9933")) #as.matrix(rbind(x,y)) and beside=TRUE to include both df on same graph
+legend("topright", 
+       legend = c("E.Coli", "H.Anseris"), 
+       fill = c("#009999","#FF9933")) 
+grid()
+
+```
+
+**Figure 4A. ** Bar graph depicting nucleotide (A, C, G or T) frequency in the total E.Coli and H.Anseris CDS. 
+
+
+```{r part2q3a-2}
+ecoli_ntprop <- ecoli_ntfreq/sum(ecoli_ntfreq)
+hanseris_ntprop <- hanseris_ntfreq/sum(hanseris_ntfreq)
+
+barplot(as.matrix(rbind(ecoli_ntprop, hanseris_ntprop)), beside=TRUE, ylab="nucleotide proportion", ylim = c(0,0.50), 
+        xlab = "nucleotide", main = "E. Coli vs H.Anseris CDS composition",col = c("#009999","#FF9933"))
+legend("topright", 
+       legend = c("E.Coli", "H.Anseri"), 
+       fill = c("#009999","#FF9933"))
 grid()
 ```
 
-**FIGURE LEGEND NEEDED HERE** 
+**Figure 4B. ** Bar graph depicting nucleotide (A, C, G or T) proportion in the total E.Coli and H.Anseris CDS. 
 
 
-**ANS: **
-E.Coli 
-total CDS length = 3978528 (3.99 MB)
-mean = 939 bp
-median = 831 bp
+**Q3B: **
 
-H.Anseris 
-total CDS length = 1534932 (1.53 MB)
-mean = 973 bp
-median = 816 bp
-
-*CAN I MAKE A NEW DF AND PUT THIS ALL INTO A SNAZZY TABLE?* 
-
-The total CDS length is approximately 2.6 times greater in E.Coli when compared to H.Anseris. Despite this, the mean and median length of each is roughly comparable between the two organisms **(TABLE/FIG)**. Additionally, H.Anseris includes a small numer of longer CDS (>8000 bp in length), whereas all CDS for E.Coli are less than 8000 bp (**BOXPLOT FIG REF**). 
-
-
-#### Question 3. Calculate the frequency of DNA bases in the total coding sequences for both organisms. Perform the same calculation for the total protein sequence. Create bar plots for nucleotide and amino acid frequency. Describe any differences between the two organisms.
-
-- Told the alphabet
-- used sequence
-
-
-Given that the total coding sequence length was approximately 2.X times greater in E.Coli when compared to H.Anseri, the frequency each DNA bases was normalised to 
 
 ```{r part2q3}
+ecoli_prot <- lapply(ecoli_cds,translate) #translate CDS into amino acid seq
+hanseris_prot <- lapply(hanseris_cds,translate)
 
+aminoacids <- unique(ecoli_prot[[2]]) #define amino acid alphabet using a cDS that contains all 20 amino acids
+aminoacids <- aminoacids[aminoacids != "*"] #remove stop codon
+
+ecoli_prots <- unlist(ecoli_prot) #unlist prior to using count function
+hanseris_prots <- unlist(hanseris_prot)
+
+ecoli_protscounts <- count(ecoli_prots,wordsize = 1, alphabet = aminoacids) #freq of each amino acid
+hanseris_protscounts <- count(hanseris_prots,wordsize = 1, alphabet = aminoacids)
+
+barplot(as.matrix(rbind(ecoli_protscounts, hanseris_protscounts)), beside=TRUE, ylab="frequency", 
+        xlab = "amino acid", main = "E. Coli vs H.Anseris protein composition by amino acid",col=c("#009999","#FF9933"))
+legend("topright", 
+       legend = c("E.Coli", "H.Anseri"), 
+       fill = c("#009999","#FF9933"))
+grid()
 ```
+
+**Figure 5A. ** Bar graph depicting amino acid (n=20, stop codon omitted) frequency in the total E.Coli and H.Anseris CDS. 
+
+
+```{r part2q3-2}
+ecoli_protsprop <- ecoli_protscounts/sum(ecoli_protscounts) #normalised to the sum of all amino acount counts 
+hanseris_protsprop <- hanseris_protscounts/sum(hanseris_protscounts)
+
+barplot(as.matrix(rbind(ecoli_protsprop, hanseris_protsprop)), beside=TRUE, ylab="proportion", 
+        xlab = "amino acid", main = "E. Coli vs H.Anseris protein composition by amino acid",ylim = c(0,0.12),col=c("#009999","#FF9933"))
+legend("topright", 
+       legend = c("E.Coli", "H.Anseri"), 
+       fill = c("#009999","#FF9933"))
+grid()
+```
+
+**Figure 5B. ** Bar graph depicting amino acid (n=20, stop codon omitted) proportion in the total E.Coli and H.Anseris CDS. 
+
+
+***
 
 #### Question 4. Create a codon usage table and quantify the codon usage bias among all coding sequences. Describe any differences between the two organisms with respect to their codon usage bias. Provide charts to support your observations.
 
 ```{r part2q4}
+ecoli_uco <- uco(ecoli_dna,index = "rscu",as.data.frame = TRUE) #uco for codon usage #as.data.frame=TRUE returns indices as a data frame, not vector
+ecoli_uco_ordered <- ecoli_uco[order(ecoli_uco$RSCU),]  #order from lowest to highest by RSCU
 
+hanseris_uco <- uco(hanseris_dna,index = "rscu",as.data.frame = TRUE)
+hanseris_uco_ordered <- hanseris_uco[order(hanseris_uco$RSCU),]  
+
+ecoli_uco_ordered[c(1:6,59:64),c(1,2,5)] %>% #1:6 lowest 6 by RSCU #59:64 top 6 by RSCU  #pipe to kableExtra
+  kbl(caption = "Table 4. Part 2 Question 4: E.Coli. Top six codons used least frequently (teal shading) and top six codons used more frequently (white) than expected (by RSCU).") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:6, color = "white", background = "#006666") %>% #shading to distinguish between top/bottom six
+  row_spec(7:12, color = "#009999", background = "White" )
+
+hanseris_uco_ordered[c(1:6,59:64),c(1,2,5)] %>% 
+  kbl(caption = "Table 5. Part 2 Question 4: H.Anseris. Top six codons used least frequently (orange shading) and top six codons used more frequently (white) than expected (by RSCU).") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:6, color = "white", background = "#FF9933") %>% 
+  row_spec(7:12, color = "#FF9933", background = "White" )
 ```
+
+***
 
 #### Question 5. In the organism of interest, identify 10 protein sequence k-mers of length 3-5 which are the most over- and under-represented k-mers in your organism of interest. Are these k-mers also over- and under-represented in E. coli to a similar extent? Provide plots to support your observations. Why do you think these sequences are present at different levels in the genomes of these organisms?
 
 ```{r part2q5}
+ecoli_3merfreq <- count(ecoli_prots,wordsize=3,alphabet=aminoacids,freq=TRUE) #3-mer amino acid sequence by frequency
+ecoli_3merfreq_ordered <- ecoli_3merfreq[order(ecoli_3merfreq)] #order, lowest to highest as default
 
+ecoli_4merfreq <- count(ecoli_prots,wordsize=4,alphabet=aminoacids,freq=TRUE) #4-mer amino acid sequence by frequency
+ecoli_4merfreq_ordered <- ecoli_4merfreq[order(ecoli_4merfreq)] #order, lowest to highest as default
+
+ecoli_5merfreq <- count(ecoli_prots,wordsize=5,alphabet=aminoacids,freq=TRUE) #4-mer amino acid sequence by frequency
+ecoli_5merfreq_ordered <- ecoli_5merfreq[order(ecoli_5merfreq)] #order, lowest to highest as default
+
+#pipe 1:10 (10 underrep) and last 10 (use nrow to determine max row) to kableExtra to present
+ecoli_3merfreq_ordered[c(1:10,7991:8000)] %>% 
+  kbl(caption = "Table 6A. Part 2 Question 5: E.Coli. 10 under-represented (teal shading) over-represented (white) amino acid 3-mers") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:10, color = "white", background = "#006666") %>% #shading to distinguish between 10 over and under- rep
+  row_spec(11:20, color = "#009999", background = "White" )
+
+ecoli_4merfreq_ordered[c(1:10,159991:160000)] %>% #1:6 lowest 6 by RSCU #59:64 top 6 by RSCU  #pipe to kableExtra
+  kbl(caption = "Table 6B. Part 2 Question 5: E.Coli. 10 under-represented (teal shading) over-represented (white) amino acid 4-mers") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:10, color = "white", background = "#006666") %>% 
+  row_spec(11:20, color = "#009999", background = "White" )
+
+ecoli_5merfreq_ordered[c(1:10,3199991:3200000)] %>% 
+  kbl(caption = "Table 6C. Part 2 Question 5: E.Coli. 10 under-represented (teal shading) over-represented (white) amino acid 5-mers") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:10, color = "white", background = "#006666") %>% 
+  row_spec(11:20, color = "#009999", background = "White" )
+
+
+#now repeated for 3-, 4- and 5-mers using the hanseris_prots sequence
+
+hanseris_3merfreq <- count(hanseris_prots,wordsize=3,alphabet=aminoacids,freq=TRUE)
+hanseris_3merfreq_ordered <- hanseris_3merfreq[order(hanseris_3merfreq)] 
+
+hanseris_4merfreq <- count(hanseris_prots,wordsize=4,alphabet=aminoacids,freq=TRUE)
+hanseris_4merfreq_ordered <- hanseris_4merfreq[order(hanseris_4merfreq)] 
+
+hanseris_5merfreq <- count(hanseris_prots,wordsize=5,alphabet=aminoacids,freq=TRUE) 
+hanseris_5merfreq_ordered <- hanseris_5merfreq[order(hanseris_5merfreq)] 
+
+#pipe 1:10 (10 underrep) and last 10 (use nrow to determine max row) to kableExtra to present
+hanseris_3merfreq_ordered[c(1:10,7991:8000)] %>% 
+  kbl(caption = "Table 7A. Part 2 Question 5: H.Anseris. 10 under-represented (teal shading) over-represented (white) amino acid 3-mers") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:10, color = "white", background = "#FF9933") %>% #shading to distinguish between 10 over and under- rep
+  row_spec(11:20, color = "#FF9933", background = "White" )
+
+hanseris_4merfreq_ordered[c(1:10,159991:160000)] %>% #1:6 lowest 6 by RSCU #59:64 top 6 by RSCU  #pipe to kableExtra
+  kbl(caption = "Table 7B. Part 2 Question 5: H.Anseris. 10 under-represented (teal shading) over-represented (white) amino acid 4-mers") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:10, color = "white", background = "#FF99336") %>% 
+  row_spec(11:20, color = "#FF9933", background = "White" )
+
+hanseris_4merfreq_ordered[c(1:10,3199991:3200000)] %>% 
+  kbl(caption = "Table 7C. Part 2 Question 5: H.Anseris. 10 under-represented (teal shading) over-represented (white) amino acid 5-mers") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
+  row_spec(1:10, color = "white", background = "#FF9933") %>% 
+  row_spec(11:20, color = "#FF9933", background = "White" )
 ```
 
+***
 
 ```{r sessionInfo}
 sessionInfo()
 ```
-**make sure to include session info before submitting. this must include kable, and other packages used in week10**
