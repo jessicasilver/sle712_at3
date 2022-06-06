@@ -394,10 +394,10 @@ hanseris_3merfreq_ordered[c(1:10,7991:8000)] %>%
 hanseris_4merfreq_ordered[c(1:10,159991:160000)] %>% #1:6 lowest 6 by RSCU #59:64 top 6 by RSCU  #pipe to kableExtra
   kbl(caption = "Table 7B. Part 2 Question 5: H.Anseris. 10 under-represented (teal shading) over-represented (white) amino acid 4-mers") %>%
   kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
-  row_spec(1:10, color = "white", background = "#FF99336") %>% 
+  row_spec(1:10, color = "white", background = "#FF9933") %>% 
   row_spec(11:20, color = "#FF9933", background = "White" )
 
-hanseris_4merfreq_ordered[c(1:10,3199991:3200000)] %>% 
+hanseris_5merfreq_ordered[c(1:10,3199991:3200000)] %>% 
   kbl(caption = "Table 7C. Part 2 Question 5: H.Anseris. 10 under-represented (teal shading) over-represented (white) amino acid 5-mers") %>%
   kable_classic(full_width = F, html_font = "Cambria", position = "center", font_size = 14) %>%
   row_spec(1:10, color = "white", background = "#FF9933") %>% 
